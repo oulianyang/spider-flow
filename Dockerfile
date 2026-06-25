@@ -10,8 +10,7 @@
 #   docker build -t spider-flow:latest .
 #
 # 交叉构建 ARM64 镜像（Windows 上，需要 Docker Desktop + WSL2）:
-#   docker build --platform linux/arm64 -t spider-flow:arm64 .
-#   docker tag spider-flow:arm64 spider-flow:latest
+#   docker buildx build --platform linux/arm64 -t spider-flow:arm64 --load .
 #
 # 导出镜像（离线部署用）:
 #   docker save spider-flow:latest -o spider-flow.tar
@@ -30,7 +29,7 @@ LABEL description="spider-flow visual web scraping platform with browser automat
 # ========== 安装浏览器 + ChromeDriver + 中文字体 ==========
 ENV DEBIAN_FRONTEND=noninteractive
 
-# --- 公共依赖（amd64 和 arm64 共用）---
+# --- 第 1 层：安装公共依赖（字体 + Chrome 运行库）---
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
     curl \
@@ -57,13 +56,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpango-1.0-0 \
     libcairo2 \
     libasound2 \
-    && \
-    # ========= Chrome for Testing（amd64 / arm64 统一方案） =========
-    # 使用 Google 官方的 Chrome for Testing 独立二进制包
-    # 优点：Chrome 与 ChromeDriver 版本自动匹配，无需混入第三方仓库，双架构统一
-    # 通过 uname -m 检测运行时架构，不依赖 BuildKit 注入的 TARGETARCH，
-    # 避免在未启用 BuildKit 时 TARGETARCH 为空导致 x86 机器错误下载 arm64 包
-    case "$(uname -m)" in \
+    && rm -rf /var/lib/apt/lists/*
+
+# --- 第 2 层：下载并安装 Chrome for Testing ---
+# 拆分为独立层，避免 QEMU 模拟 ARM64 时单层内存过大被 OOM Killer 杀掉（exit code 9）
+# 使用 buildx 原生的 TARGETPLATFORM 变量检测目标架构，兼容经典 builder 和 buildx
+RUN case "$(uname -m)" in \
         x86_64)  PLATFORM="linux64" ;; \
         aarch64) PLATFORM="linux-arm64" ;; \
         *) echo "不支持的 CPU 架构: $(uname -m)"; exit 1 ;; \
@@ -71,21 +69,27 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     echo "=== Installing Chrome for Testing (${PLATFORM}) ===" && \
     VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE") && \
     echo "Chrome for Testing version: ${VERSION}" && \
-    # 下载 Chrome
     curl -sS -o /tmp/chrome.zip \
         "https://storage.googleapis.com/chrome-for-testing-public/${VERSION}/${PLATFORM}/chrome-${PLATFORM}.zip" && \
     unzip -q /tmp/chrome.zip -d /tmp/ && \
     mv /tmp/chrome-${PLATFORM} /opt/chrome && \
     ln -sf /opt/chrome/chrome /usr/local/bin/google-chrome-stable && \
     chmod +x /opt/chrome/chrome && \
-    # 下载 ChromeDriver（版本与 Chrome 完全匹配）
+    rm -rf /tmp/chrome*
+
+# --- 第 3 层：下载并安装 ChromeDriver ---
+# 单独一层，降低内存峰值；版本与上方 Chrome 自动匹配（同 URL 前缀）
+RUN case "$(uname -m)" in \
+        x86_64)  PLATFORM="linux64" ;; \
+        aarch64) PLATFORM="linux-arm64" ;; \
+    esac && \
+    VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE") && \
     curl -sS -o /tmp/chromedriver.zip \
         "https://storage.googleapis.com/chrome-for-testing-public/${VERSION}/${PLATFORM}/chromedriver-${PLATFORM}.zip" && \
     unzip -q /tmp/chromedriver.zip -d /tmp/ && \
     mv /tmp/chromedriver-${PLATFORM}/chromedriver /usr/local/bin/chromedriver && \
     chmod +x /usr/local/bin/chromedriver && \
-    # 清理
-    rm -rf /tmp/chrome* /tmp/chromedriver* /var/lib/apt/lists/*
+    rm -rf /tmp/chromedriver*
 
 # ========== 应用配置 ==========
 ENV SERVER_PORT=8088 \
