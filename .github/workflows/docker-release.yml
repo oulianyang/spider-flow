@@ -1,0 +1,141 @@
+# ============================================================
+# spider-flow Docker 镜像构建 & 发布
+# ============================================================
+# 触发方式：GitHub Actions 页面 → Run workflow
+# 构建产物：4 个 docker save tar 文件（amd64 + arm64）
+# 发布到：GitHub Releases（可直接浏览器下载）
+#
+# 使用步骤：
+#   1. 推送代码到 GitHub
+#   2. 打开仓库 Actions 页面，选 "Build Docker Images"，点 Run workflow
+#   3. version 参数填版本号（如 v0.5.0），用于 Release 标题和镜像 tag
+#   4. 等待约 15-20 分钟完成
+#   5. 到 Releases 页面下载 tar 文件
+#   6. 内网 docker load -i xxx.tar 即可使用
+# ============================================================
+
+name: Build Docker Images
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号（用于 Release 标题和镜像 tag，如 v0.5.0）'
+        required: true
+        default: 'v0.5.0'
+
+permissions:
+  contents: write
+
+env:
+  IMAGE_NAME: spider-flow
+
+jobs:
+  build:
+    name: 构建 & 导出镜像
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - platform: linux/amd64
+            tag_suffix: amd64
+          - platform: linux/arm64
+            tag_suffix: arm64
+
+    steps:
+      - name: Checkout 代码
+        uses: actions/checkout@v4
+
+      - name: 设置 JDK 8
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+          cache: maven
+
+      - name: Maven 编译
+        run: mvn clean package -DskipTests -q
+
+      - name: 设置 Docker QEMU（ARM64 模拟）
+        uses: docker/setup-qemu-action@v3
+
+      - name: 设置 Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 构建镜像 (${{ matrix.platform }})
+        run: |
+          docker build \
+            --platform ${{ matrix.platform }} \
+            -t ${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }} \
+            .
+
+      - name: 导出 spider-flow 镜像
+        run: |
+          docker save ${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }} \
+            -o spider-flow-${{ matrix.tag_suffix }}.tar
+
+      - name: 拉取 & 导出 MySQL 镜像 (${{ matrix.platform }})
+        run: |
+          docker pull --platform ${{ matrix.platform }} mysql:8.0
+          docker save mysql:8.0 -o mysql-8.0-${{ matrix.tag_suffix }}.tar
+
+      - name: 上传 spider-flow-${{ matrix.tag_suffix }}.tar
+        uses: actions/upload-artifact@v4
+        with:
+          name: spider-flow-${{ matrix.tag_suffix }}.tar
+          path: spider-flow-${{ matrix.tag_suffix }}.tar
+          retention-days: 1
+
+      - name: 上传 mysql-8.0-${{ matrix.tag_suffix }}.tar
+        uses: actions/upload-artifact@v4
+        with:
+          name: mysql-8.0-${{ matrix.tag_suffix }}.tar
+          path: mysql-8.0-${{ matrix.tag_suffix }}.tar
+          retention-days: 1
+
+  release:
+    name: 创建 GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 下载全部 tar 文件
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: 列出产物
+        run: ls -lh artifacts/
+
+      - name: 创建 Release 并上传
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: spider-flow ${{ github.event.inputs.version }}
+          body: |
+            ## Docker 镜像离线部署包
+
+            根据内网服务器架构选择对应文件下载：
+
+            | 架构 | 应用镜像 | MySQL 镜像 |
+            |------|---------|-------------|
+            | x86_64 (amd64) | `spider-flow-amd64.tar` | `mysql-8.0-amd64.tar` |
+            | aarch64 (arm64) | `spider-flow-arm64.tar` | `mysql-8.0-arm64.tar` |
+
+            > 确认架构命令：`uname -m`
+
+            ### 部署步骤
+            1. `docker load -i spider-flow-amd64.tar`（或 arm64）
+            2. `docker load -i mysql-8.0-amd64.tar`（或 arm64）
+            3. `docker tag spider-flow:amd64 spider-flow:latest`（或 arm64）
+            4. 下载仓库中的 `docker-compose.yml`、`.env.example`、`db/spiderflow.sql`
+            5. `cp .env.example .env && vi .env` 修改配置
+            6. `docker compose up -d`
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/spider-flow-amd64.tar
+            artifacts/mysql-8.0-amd64.tar
+            artifacts/spider-flow-arm64.tar
+            artifacts/mysql-8.0-arm64.tar
