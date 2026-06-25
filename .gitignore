@@ -1,0 +1,13 @@
+target
+*.iml
+out/
+.idea
+.classpath
+.project
+.settings
+bin/
+.myeclipse
+local
+
+# Docker environment (contains passwords)
+.env

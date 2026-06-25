@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+*.iml
+.vscode
+.settings
+.project
+.classpath
+
+# Build output (use pre-built JAR or multi-stage build)
+**/target/*
+!spider-flow-web/target/spider-flow.jar
+
+# Docker files (don't send to build context)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation
+*.md
+LICENSE
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db

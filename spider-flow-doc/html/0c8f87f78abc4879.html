@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>string - spider-flow v0.5.0 使用手册</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #333; line-height: 1.8; background: #f5f6f8; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: #1e1e2e; color: #cdd6f4; padding: 20px 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; flex-shrink: 0; }
+.sidebar h2 { padding: 0 20px 15px; font-size: 16px; color: #89b4fa; border-bottom: 1px solid #313244; margin-bottom: 10px; }
+.sidebar .cat { padding: 8px 20px 4px; font-size: 13px; color: #a6adc8; font-weight: 600; margin-top: 8px; }
+.sidebar a { display: block; padding: 5px 20px 5px 30px; color: #bac2de; text-decoration: none; font-size: 14px; transition: all .15s; }
+.sidebar a:hover { background: #313244; color: #89b4fa; }
+.sidebar a.active { background: #313244; color: #89b4fa; border-left: 3px solid #89b4fa; padding-left: 27px; }
+.main { margin-left: 280px; flex: 1; padding: 30px 40px; max-width: 960px; }
+.main h1 { font-size: 28px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #89b4fa; }
+.main h2 { font-size: 22px; margin-top: 35px; margin-bottom: 15px; color: #1e1e2e; }
+.main h3 { font-size: 18px; margin-top: 25px; margin-bottom: 10px; color: #45475a; }
+.main p { margin-bottom: 14px; }
+.main ul, .main ol { margin: 10px 0 14px 24px; }
+.main li { margin-bottom: 6px; }
+.main table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+.main th, .main td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+.main th { background: #e8e9ed; font-weight: 600; }
+.main tr:nth-child(even) { background: #f9f9fb; }
+.main pre { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 12px 0; font-size: 14px; line-height: 1.5; }
+.main code { background: #e8e9ed; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+.main pre code { background: none; padding: 0; }
+.main img { max-width: 100%; border-radius: 4px; margin: 8px 0; }
+.main blockquote { border-left: 4px solid #89b4fa; padding: 10px 16px; margin: 12px 0; background: #eff1f5; color: #4c4f69; }
+.main a { color: #1e66f5; text-decoration: none; }
+.main a:hover { text-decoration: underline; }
+.nav-bar { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; }
+.nav-bar a { color: #1e66f5; text-decoration: none; font-size: 15px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; }
+.nav-bar a:hover { background: #eff1f5; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+<h2>spider-flow v0.5.0</h2>
+<div class="cat">使用教程</div>
+<a href="98bc712c0831b890.html">简介</a>
+<a href="cbd8de47d4474b91.html">安装部署</a>
+<a href="0618b5296afcb0ec.html">快速入门</a>
+<a href="620e86c3c5a46c8b.html">表达式语法</a>
+<a href="a84ba53bcaa8876c.html">内置变量</a>
+<a href="b41274ae955f4627.html">高级应用</a>
+<a href="012ed125c6ef4d2c.html">插件开发</a>
+<a href="b21643963c940cb5.html">常见问题</a>
+<div class="cat">函数说明</div>
+<a href="6b51214d941f8b38.html">抽取函数</a>
+<a href="6c11a826a7fb67f5.html">base64</a>
+<a href="0257ebe9a5c40dc8.html">date</a>
+<a href="0cf27f119d785511.html">file</a>
+<a href="736dd7675d55820b.html">json</a>
+<a href="04c4eb5f448efd9b.html">list</a>
+<a href="9268522df1b866d7.html">random</a>
+<a href="0c8f87f78abc4879.html" class="active">string</a>
+<a href="5475fed325f0ca47.html">url</a>
+<div class="cat">类型扩展</div>
+<a href="db12d839b285b452.html">说明</a>
+<a href="cd5de098cc77a7c2.html">SpiderResponse</a>
+<a href="3b9afee52169a1b8.html">String</a>
+<a href="0cf88f889d5b208.html">Date</a>
+<a href="e62136367240b933.html">Object</a>
+<a href="24462b07eba0709d.html">List</a>
+<a href="c1b64145d3c2abaa.html">Map</a>
+<a href="08255145cc328955.html">Element</a>
+<a href="8c170717c4b91a77.html">Elements</a>
+<a href="bb62c1cf56345655.html">数组</a>
+<div class="cat">插件</div>
+<a href="f29ef61ee185953e.html">selenium</a>
+<a href="c6a0ff50924497e3.html">redis</a>
+<a href="f84295ba325f4603.html">mongodb</a>
+<a href="fa1cf76cf5f45e8a.html">oss</a>
+<a href="31febf38b20913ac.html">ocr</a>
+<a href="88082c85c82b79ca.html">IP代理池插件</a>
+</nav>
+<main class="main">
+<h1>string</h1>
+
+<h1 id="3kv61"><a class="reference-link" name="3kv61"></a><span class="header-link octicon octicon-link"></span>string</h1><h2 id="gdba7w"><a class="reference-link" name="gdba7w"></a><span class="header-link octicon octicon-link"></span>substring</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>被截取的内容</td> <td>否</td></tr> <tr><td>beginIndex</td> <td>起始位置</td> <td>否</td></tr> <tr><td>endIndex</td> <td>结束位置</td> <td>是</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<p>截取字符串</p>
+<ul>
+<li>从<code>unhappy</code>中提取<code>happy</code></li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.substring('unhappy',2)}</code></pre>
+<ul>
+<li>从<code>smiles</code>中提取<code>mile</code></li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.substring('smiles',1,5)}</code></pre>
+<h2 id="fsu34o"><a class="reference-link" name="fsu34o"></a><span class="header-link octicon octicon-link"></span>lower</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>要转小写的字符串</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<p>字符串转小写</p>
+<ul>
+<li>把<code>hello</code>变成小写<code>hello</code></li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.lower('HELLO')}</code></pre>
+<h2 id="gbuykd"><a class="reference-link" name="gbuykd"></a><span class="header-link octicon octicon-link"></span>upper</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>要转大写的字符串</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<p>字符串转大写</p>
+<ul>
+<li>把<code>hello</code>变成大写<code>HELLO</code></li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.upper('hello')}</code></pre>
+<h2 id="79as3w"><a class="reference-link" name="79as3w"></a><span class="header-link octicon octicon-link"></span>indexOf</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>被查找的字符串</td> <td>否</td></tr> <tr><td>str</td> <td>要查找的字符串</td> <td>否</td></tr> <tr><td>fromIndex</td> <td>起始位置</td> <td>是</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：int</p>
+<p>获取字符串在被查找字符串中的位置</p>
+<ul>
+<li>找<code>world</code>在<code>hello world</code>中的位置</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.indexOf('hello world','world')}</code></pre>
+<h2 id="acjjhe"><a class="reference-link" name="acjjhe"></a><span class="header-link octicon octicon-link"></span>replace</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>被替换的字符串</td> <td>否</td></tr> <tr><td>source</td> <td>要替换的字符串</td> <td>否</td></tr> <tr><td>target</td> <td>目标字符串</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<p>替换字符串</p>
+<ul>
+<li>把<code>Hello,World!</code>替换成<code>Hello,SpiderFlow!</code></li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.replace('Hello,World','World','SpiderFlow')}</code></pre>
+<h2 id="binag8"><a class="reference-link" name="binag8"></a><span class="header-link octicon octicon-link"></span>replaceAll</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>被替换的字符串</td> <td>否</td></tr> <tr><td>regx</td> <td>正则表达式</td> <td>否</td></tr> <tr><td>target</td> <td>替换字符串</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<p>正则替换字符串</p>
+<ul>
+<li>把<code>h1e2l3l4o5</code>替换成<code>hello</code></li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.replaceAll('h1e2l3l4o5','\\d+','')}</code></pre>
+<h2 id="4c7vch"><a class="reference-link" name="4c7vch"></a><span class="header-link octicon octicon-link"></span>replaceFirst</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>被替换的字符串</td> <td>否</td></tr> <tr><td>regx</td> <td>正则表达式</td> <td>否</td></tr> <tr><td>target</td> <td>替换字符串</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<p>正则替换第一个字符串</p>
+<ul>
+<li>把<code>h1e2l3l4o5</code>替换成<code>he2l3l4o5</code></li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.replaceFirst('h1e2l3l4o5','\\d+','')}</code></pre>
+<h2 id="ffi0tr"><a class="reference-link" name="ffi0tr"></a><span class="header-link octicon octicon-link"></span>length</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>要获取长度的字符串</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：int</p>
+<p>获取字符串的长度</p>
+<ul>
+<li>获取<code>hello</code>的长度</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.length('hello')}</code></pre>
+<h2 id="340i41"><a class="reference-link" name="340i41"></a><span class="header-link octicon octicon-link"></span>trim</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>要去除前后空格的字符串</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<p>去除前后空格</p>
+<h2 id="9ob3zh"><a class="reference-link" name="9ob3zh"></a><span class="header-link octicon octicon-link"></span>split</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>被替换的字符串</td> <td>否</td></tr> <tr><td>regx</td> <td>正则表达式</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<p>正则分割字符串</p>
+<ul>
+<li>把<code>h1e2l3l4o5</code>替换成<code>['h','e','l','l','o']</code></li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.split('h1e2l3l4o5','\\d+')}</code></pre>
+<h2 id="gha1a3"><a class="reference-link" name="gha1a3"></a><span class="header-link octicon octicon-link"></span>bytes</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>content</td> <td>被替换的字符串</td> <td>否</td></tr> <tr><td>charset</td> <td>编码格式</td> <td>是</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：byte[]</p>
+<p>获取字符串的字节数组</p>
+<ul>
+<li>获取字符串<code>hello</code>的字节数组</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.bytes('hello')}</code></pre>
+<h2 id="9h0o2g"><a class="reference-link" name="9h0o2g"></a><span class="header-link octicon octicon-link"></span>newString</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>byte[]</td> <td>字节数组</td> <td>否</td></tr> <tr><td>charset</td> <td>编码格式</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<ul>
+<li>把字节数组转为String</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.newString(resp.bytes)}</code></pre>
+<h2 id="3agfw3"><a class="reference-link" name="3agfw3"></a><span class="header-link octicon octicon-link"></span>equals</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>str1</td> <td>字符串1</td> <td>否</td></tr> <tr><td>str2</td> <td>字符串2</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：String</p>
+<ul>
+<li>判断两个字符串是否相同</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.equals(resp.html,'hello,world')}</code></pre>
+<h2 id="f0pg0h"><a class="reference-link" name="f0pg0h"></a><span class="header-link octicon octicon-link"></span>uuid</h2><p>TIP</p>
+<p>返回值类型：String</p>
+<ul>
+<li>获取一个UUID字符串</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.uuid()}</code></pre>
+<h2 id="z0wf0"><a class="reference-link" name="z0wf0"></a><span class="header-link octicon octicon-link"></span>uuids</h2><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>size</td> <td>要获取uuid的数量</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：List&lt;String&gt;</p>
+<ul>
+<li>获取10个uuid</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${string.uuids(10)}</code></pre>
+<!-- 原文：https://www.spiderflow.org/function/string.html -->
+
+<div class="nav-bar">
+<a href="9268522df1b866d7.html">&larr; random</a>
+<a href="5475fed325f0ca47.html">url &rarr;</a>
+</div>
+</main>
+</div>
+</body>
+</html>

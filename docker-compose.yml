@@ -1,0 +1,99 @@
+# ============================================================
+# spider-flow Docker Compose 部署
+# ============================================================
+# 使用方式:
+#   1. 复制 .env.example 为 .env 并修改配置
+#   2. 执行 mvn clean package -DskipTests 编译 JAR
+#   3. docker build -t spider-flow:latest . 构建镜像
+#   4. docker compose up -d 启动
+#   5. 访问 http://localhost:8088
+#
+# 离线部署: 先 docker load 导入镜像，再 docker compose up -d
+# ============================================================
+
+services:
+  # ========== MySQL 数据库 ==========
+  mysql:
+    image: mysql:8.0
+    container_name: spider-flow-mysql
+    restart: always
+    environment:
+      # 数据库由 db/spiderflow.sql 初始化（包含 CREATE DATABASE + 建表）
+      # 不设置 MYSQL_DATABASE 避免与 init 脚本冲突
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-spiderflow}
+      TZ: Asia/Shanghai
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./db/spiderflow.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --max-connections=500
+      - --lower-case-table-names=1
+      # 使用传统密码插件，兼容项目内置的 MySQL Connector/J 5.x 驱动（com.mysql.jdbc.Driver）
+      - --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      # 使用 MYSQL_PWD 环境变量避免密码出现在进程列表中（CMD-SHELL 由容器内 shell 执行，$MYSQL_ROOT_PASSWORD 在运行时展开）
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost -u root"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - spider-net
+
+  # ========== Spider-Flow 应用 ==========
+  app:
+    image: spider-flow:latest
+    container_name: spider-flow-app
+    restart: always
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # 数据库配置
+      SPRING_DATASOURCE_URL: "jdbc:mysql://mysql:3306/spiderflow?useSSL=false&useUnicode=true&characterEncoding=UTF8&autoReconnect=true&allowPublicKeyRetrieval=true"
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-spiderflow}
+      # 服务配置
+      SERVER_PORT: 8088
+      # 爬虫引擎配置
+      SPIDER_WORKSPACE: /data/spider
+      SPIDER_JOB_ENABLE: "true"
+      SPIDER_THREAD_MAX: "64"
+      SPIDER_THREAD_DEFAULT: "8"
+      # Selenium 配置（容器内路径）
+      SELENIUM_DRIVER_CHROME: /usr/local/bin/chromedriver
+      # JVM 参数（可通过 .env 文件的 JAVA_OPTS 覆盖）
+      JAVA_OPTS: "${JAVA_OPTS:--Xms512m -Xmx2g -XX:+UseG1GC -Djava.security.egd=file:/dev/./urandom}"
+    ports:
+      - "${APP_PORT:-8088}:8088"
+    volumes:
+      # 持久化爬虫日志和历史版本
+      - spider-workspace:/data/spider
+      # 可选：挂载自定义配置文件（取消注释后会覆盖环境变量配置）
+      # - ./application.properties:/app/application.properties:ro
+    # Chrome 需要较大的共享内存
+    shm_size: "2g"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8088/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - spider-net
+
+# ========== 数据卷 ==========
+volumes:
+  mysql-data:
+    driver: local
+  spider-workspace:
+    driver: local
+
+# ========== 网络 ==========
+networks:
+  spider-net:
+    driver: bridge

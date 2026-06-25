@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>内置变量 - spider-flow v0.5.0 使用手册</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #333; line-height: 1.8; background: #f5f6f8; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: #1e1e2e; color: #cdd6f4; padding: 20px 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; flex-shrink: 0; }
+.sidebar h2 { padding: 0 20px 15px; font-size: 16px; color: #89b4fa; border-bottom: 1px solid #313244; margin-bottom: 10px; }
+.sidebar .cat { padding: 8px 20px 4px; font-size: 13px; color: #a6adc8; font-weight: 600; margin-top: 8px; }
+.sidebar a { display: block; padding: 5px 20px 5px 30px; color: #bac2de; text-decoration: none; font-size: 14px; transition: all .15s; }
+.sidebar a:hover { background: #313244; color: #89b4fa; }
+.sidebar a.active { background: #313244; color: #89b4fa; border-left: 3px solid #89b4fa; padding-left: 27px; }
+.main { margin-left: 280px; flex: 1; padding: 30px 40px; max-width: 960px; }
+.main h1 { font-size: 28px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #89b4fa; }
+.main h2 { font-size: 22px; margin-top: 35px; margin-bottom: 15px; color: #1e1e2e; }
+.main h3 { font-size: 18px; margin-top: 25px; margin-bottom: 10px; color: #45475a; }
+.main p { margin-bottom: 14px; }
+.main ul, .main ol { margin: 10px 0 14px 24px; }
+.main li { margin-bottom: 6px; }
+.main table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+.main th, .main td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+.main th { background: #e8e9ed; font-weight: 600; }
+.main tr:nth-child(even) { background: #f9f9fb; }
+.main pre { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 12px 0; font-size: 14px; line-height: 1.5; }
+.main code { background: #e8e9ed; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+.main pre code { background: none; padding: 0; }
+.main img { max-width: 100%; border-radius: 4px; margin: 8px 0; }
+.main blockquote { border-left: 4px solid #89b4fa; padding: 10px 16px; margin: 12px 0; background: #eff1f5; color: #4c4f69; }
+.main a { color: #1e66f5; text-decoration: none; }
+.main a:hover { text-decoration: underline; }
+.nav-bar { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; }
+.nav-bar a { color: #1e66f5; text-decoration: none; font-size: 15px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; }
+.nav-bar a:hover { background: #eff1f5; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+<h2>spider-flow v0.5.0</h2>
+<div class="cat">使用教程</div>
+<a href="98bc712c0831b890.html">简介</a>
+<a href="cbd8de47d4474b91.html">安装部署</a>
+<a href="0618b5296afcb0ec.html">快速入门</a>
+<a href="620e86c3c5a46c8b.html">表达式语法</a>
+<a href="a84ba53bcaa8876c.html" class="active">内置变量</a>
+<a href="b41274ae955f4627.html">高级应用</a>
+<a href="012ed125c6ef4d2c.html">插件开发</a>
+<a href="b21643963c940cb5.html">常见问题</a>
+<div class="cat">函数说明</div>
+<a href="6b51214d941f8b38.html">抽取函数</a>
+<a href="6c11a826a7fb67f5.html">base64</a>
+<a href="0257ebe9a5c40dc8.html">date</a>
+<a href="0cf27f119d785511.html">file</a>
+<a href="736dd7675d55820b.html">json</a>
+<a href="04c4eb5f448efd9b.html">list</a>
+<a href="9268522df1b866d7.html">random</a>
+<a href="0c8f87f78abc4879.html">string</a>
+<a href="5475fed325f0ca47.html">url</a>
+<div class="cat">类型扩展</div>
+<a href="db12d839b285b452.html">说明</a>
+<a href="cd5de098cc77a7c2.html">SpiderResponse</a>
+<a href="3b9afee52169a1b8.html">String</a>
+<a href="0cf88f889d5b208.html">Date</a>
+<a href="e62136367240b933.html">Object</a>
+<a href="24462b07eba0709d.html">List</a>
+<a href="c1b64145d3c2abaa.html">Map</a>
+<a href="08255145cc328955.html">Element</a>
+<a href="8c170717c4b91a77.html">Elements</a>
+<a href="bb62c1cf56345655.html">数组</a>
+<div class="cat">插件</div>
+<a href="f29ef61ee185953e.html">selenium</a>
+<a href="c6a0ff50924497e3.html">redis</a>
+<a href="f84295ba325f4603.html">mongodb</a>
+<a href="fa1cf76cf5f45e8a.html">oss</a>
+<a href="31febf38b20913ac.html">ocr</a>
+<a href="88082c85c82b79ca.html">IP代理池插件</a>
+</nav>
+<main class="main">
+<h1>内置变量</h1>
+
+<h1 id="d6whi1"><a class="reference-link" name="d6whi1"></a><span class="header-link octicon octicon-link"></span>内置变量</h1><h2 id="4vk25d"><a class="reference-link" name="4vk25d"></a><span class="header-link octicon octicon-link"></span>爬取结果</h2><p>当爬取节点执行后产生类型为<code>HttpResponse</code>的<code>resp</code>变量</p>
+<table><thead><tr><th>字段名称</th> <th>字段类型</th> <th>字段描述</th></tr></thead> <tbody><tr><td>html</td> <td>String</td> <td>页面HTML</td></tr> <tr><td>json</td> <td>JSONObject/JSONArray</td> <td>内容转json结果</td></tr> <tr><td>bytes</td> <td>byte[]</td> <td>二进制结果</td></tr> <tr><td>cookies</td> <td>Map&lt;String,String&gt;</td> <td>cookies</td></tr> <tr><td>headers</td> <td>Map&lt;String,String&gt;</td> <td>headers</td></tr> <tr><td>statusCode</td> <td>int</td> <td>HTTP状态码</td></tr> <tr><td>url</td> <td>String</td> <td>当前页面的URL</td></tr> <tr><td>title</td> <td>String</td> <td>当前页面的标题</td></tr> <tr><td>stream</td> <td>InputStream</td> <td>二进制流(可用于下载)</td></tr></tbody></table>
+<h2 id="5eb3ta"><a class="reference-link" name="5eb3ta"></a><span class="header-link octicon octicon-link"></span>异常信息</h2><p>当节点发生异常时，会产生ex变量，需要注意的是，ex变量不会向下传递</p>
+<h2 id="7u6o25"><a class="reference-link" name="7u6o25"></a><span class="header-link octicon octicon-link"></span>sql执行结果</h2><p>执行sql后产生此变量<code>rs</code></p>
+<ul>
+<li>当是select语句时，类型为<code>List&lt;Map&lt;String,Object&gt;&gt;</code> </li><li>当是selectInt语句时，变量类型为<code>int</code> </li><li>当是selectOne语句时，变量类型为<code>Map&lt;String,Object&gt;</code> </li><li>当是insert/update/delete语句时，变量类型为<code>int</code> </li><li>当是insertofpk语句时，返回的是主键，变量类型为<code>int</code></li></ul>
+<!-- 原文：https://www.spiderflow.org/course/variable.html -->
+
+<div class="nav-bar">
+<a href="620e86c3c5a46c8b.html">&larr; 表达式语法</a>
+<a href="b41274ae955f4627.html">高级应用 &rarr;</a>
+</div>
+</main>
+</div>
+</body>
+</html>

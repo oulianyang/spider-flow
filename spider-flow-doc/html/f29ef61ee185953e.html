@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>selenium - spider-flow v0.5.0 使用手册</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #333; line-height: 1.8; background: #f5f6f8; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: #1e1e2e; color: #cdd6f4; padding: 20px 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; flex-shrink: 0; }
+.sidebar h2 { padding: 0 20px 15px; font-size: 16px; color: #89b4fa; border-bottom: 1px solid #313244; margin-bottom: 10px; }
+.sidebar .cat { padding: 8px 20px 4px; font-size: 13px; color: #a6adc8; font-weight: 600; margin-top: 8px; }
+.sidebar a { display: block; padding: 5px 20px 5px 30px; color: #bac2de; text-decoration: none; font-size: 14px; transition: all .15s; }
+.sidebar a:hover { background: #313244; color: #89b4fa; }
+.sidebar a.active { background: #313244; color: #89b4fa; border-left: 3px solid #89b4fa; padding-left: 27px; }
+.main { margin-left: 280px; flex: 1; padding: 30px 40px; max-width: 960px; }
+.main h1 { font-size: 28px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #89b4fa; }
+.main h2 { font-size: 22px; margin-top: 35px; margin-bottom: 15px; color: #1e1e2e; }
+.main h3 { font-size: 18px; margin-top: 25px; margin-bottom: 10px; color: #45475a; }
+.main p { margin-bottom: 14px; }
+.main ul, .main ol { margin: 10px 0 14px 24px; }
+.main li { margin-bottom: 6px; }
+.main table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+.main th, .main td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+.main th { background: #e8e9ed; font-weight: 600; }
+.main tr:nth-child(even) { background: #f9f9fb; }
+.main pre { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 12px 0; font-size: 14px; line-height: 1.5; }
+.main code { background: #e8e9ed; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+.main pre code { background: none; padding: 0; }
+.main img { max-width: 100%; border-radius: 4px; margin: 8px 0; }
+.main blockquote { border-left: 4px solid #89b4fa; padding: 10px 16px; margin: 12px 0; background: #eff1f5; color: #4c4f69; }
+.main a { color: #1e66f5; text-decoration: none; }
+.main a:hover { text-decoration: underline; }
+.nav-bar { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; }
+.nav-bar a { color: #1e66f5; text-decoration: none; font-size: 15px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; }
+.nav-bar a:hover { background: #eff1f5; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+<h2>spider-flow v0.5.0</h2>
+<div class="cat">使用教程</div>
+<a href="98bc712c0831b890.html">简介</a>
+<a href="cbd8de47d4474b91.html">安装部署</a>
+<a href="0618b5296afcb0ec.html">快速入门</a>
+<a href="620e86c3c5a46c8b.html">表达式语法</a>
+<a href="a84ba53bcaa8876c.html">内置变量</a>
+<a href="b41274ae955f4627.html">高级应用</a>
+<a href="012ed125c6ef4d2c.html">插件开发</a>
+<a href="b21643963c940cb5.html">常见问题</a>
+<div class="cat">函数说明</div>
+<a href="6b51214d941f8b38.html">抽取函数</a>
+<a href="6c11a826a7fb67f5.html">base64</a>
+<a href="0257ebe9a5c40dc8.html">date</a>
+<a href="0cf27f119d785511.html">file</a>
+<a href="736dd7675d55820b.html">json</a>
+<a href="04c4eb5f448efd9b.html">list</a>
+<a href="9268522df1b866d7.html">random</a>
+<a href="0c8f87f78abc4879.html">string</a>
+<a href="5475fed325f0ca47.html">url</a>
+<div class="cat">类型扩展</div>
+<a href="db12d839b285b452.html">说明</a>
+<a href="cd5de098cc77a7c2.html">SpiderResponse</a>
+<a href="3b9afee52169a1b8.html">String</a>
+<a href="0cf88f889d5b208.html">Date</a>
+<a href="e62136367240b933.html">Object</a>
+<a href="24462b07eba0709d.html">List</a>
+<a href="c1b64145d3c2abaa.html">Map</a>
+<a href="08255145cc328955.html">Element</a>
+<a href="8c170717c4b91a77.html">Elements</a>
+<a href="bb62c1cf56345655.html">数组</a>
+<div class="cat">插件</div>
+<a href="f29ef61ee185953e.html" class="active">selenium</a>
+<a href="c6a0ff50924497e3.html">redis</a>
+<a href="f84295ba325f4603.html">mongodb</a>
+<a href="fa1cf76cf5f45e8a.html">oss</a>
+<a href="31febf38b20913ac.html">ocr</a>
+<a href="88082c85c82b79ca.html">IP代理池插件</a>
+</nav>
+<main class="main">
+<h1>selenium</h1>
+
+<h1 id="brorhf"><a class="reference-link" name="brorhf"></a><span class="header-link octicon octicon-link"></span>selenium</h1><h2 id="7p02zp"><a class="reference-link" name="7p02zp"></a><span class="header-link octicon octicon-link"></span>引入selenium插件</h2><ul>
+<li>首先到码云下载插件<a href="https://gitee.com/jmxd/spider-flow-selenium">点击下载<img alt="selenium - 图1" class="lazy" data-original="https://static.bookstack.cn/projects/spiderflow-0.5.0/dd9d9a67022f84f0cec066bb0d05eb2e.svg" src="https://static.bookstack.cn/projects/spiderflow-0.5.0/dd9d9a67022f84f0cec066bb0d05eb2e.svg"/></a>到本地并导入到工作空间或安装到maven库 </li><li>在spider-flow/spider-flow-web/pom.xml中引入插件 </li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>&lt;!-- 引入selenium插件 --&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.spiderflow&lt;/groupId&gt;
+    &lt;artifactId&gt;spider-flow-selenium&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+<ul>
+<li><p>在spider-flow/spider-flow-web/application.properties中配置驱动路径 </p>
+</li><li><p>chrome驱动下载地址：<a href="http://npm.taobao.org/mirrors/chromedriver/">http://npm.taobao.org/mirrors/chromedriver/<img alt="selenium - 图2" class="lazy" data-original="https://static.bookstack.cn/projects/spiderflow-0.5.0/da0493c1da6372b55fa78e844f43dbc8.svg" src="https://static.bookstack.cn/projects/spiderflow-0.5.0/da0493c1da6372b55fa78e844f43dbc8.svg"/></a> 注意版本问题 </p>
+</li><li>firefox驱动下载地址：<a href="https://github.com/mozilla/geckodriver/releases">https://github.com/mozilla/geckodriver/releases<img alt="selenium - 图3" class="lazy" data-original="https://static.bookstack.cn/projects/spiderflow-0.5.0/9bcd5c54d38962fb6ea620c6edb6ed21.svg" src="https://static.bookstack.cn/projects/spiderflow-0.5.0/9bcd5c54d38962fb6ea620c6edb6ed21.svg"/></a></li></ul>
+<h2 id="g7lklu"><a class="reference-link" name="g7lklu"></a><span class="header-link octicon octicon-link"></span>节点说明</h2><ul>
+<li>页面加载超时时间,单位为毫秒 </li><li>元素获取超时时间,单位为毫秒 </li><li>URL:起始地址 </li><li>节点执行完毕后，会产生<code>resp</code> 类型为<code>SeleniumResponse</code>的变量</li></ul>
+<h2 id="7ev2ui"><a class="reference-link" name="7ev2ui"></a><span class="header-link octicon octicon-link"></span>SeleniumResponse 属性</h2><table><thead><tr><th>字段名称</th> <th>字段类型</th> <th>字段描述</th></tr></thead> <tbody><tr><td>html</td> <td>String</td> <td>页面HTML</td></tr> <tr><td>json</td> <td>JSONObject/JSONArray</td> <td>内容转json结果</td></tr> <tr><td>cookies</td> <td>Map&lt;String,String&gt;</td> <td>cookies</td></tr> <tr><td>url</td> <td>String</td> <td>当前页面的URL</td></tr> <tr><td>title</td> <td>String</td> <td>当前页面的标题</td></tr></tbody></table>
+<h2 id="80t92g"><a class="reference-link" name="80t92g"></a><span class="header-link octicon octicon-link"></span>SeleniumResponse 方法</h2><h3 id="d84lal"><a class="reference-link" name="d84lal"></a><span class="header-link octicon octicon-link"></span>switchTo</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>index/iframeName/WebElement</td> <td>要切换的iframe</td> <td>否</td></tr></tbody></table>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.switchTo(index)}</code></pre>
+<p>TIP</p>
+<p>返回值类型：SeleniumResponse</p>
+<h3 id="5dost8"><a class="reference-link" name="5dost8"></a><span class="header-link octicon octicon-link"></span>switchToDefault</h3><p>切换至默认,即从iframe里切换回来</p>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.switchToDefault()}</code></pre>
+<h3 id="ez74as"><a class="reference-link" name="ez74as"></a><span class="header-link octicon octicon-link"></span>selector</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>cssSelector</td> <td>要获取的cssSelector</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElement</p>
+<ul>
+<li>获取页面上的第一个div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.selector('div')}</code></pre>
+<h3 id="5peavz"><a class="reference-link" name="5peavz"></a><span class="header-link octicon octicon-link"></span>selectors</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>cssSelector</td> <td>要获取的cssSelector</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElements</p>
+<ul>
+<li>获取页面上的所有div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.selectors('div')}</code></pre>
+<h3 id="fv6cqg"><a class="reference-link" name="fv6cqg"></a><span class="header-link octicon octicon-link"></span>xpath</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>xpath</td> <td>要获取的xpath</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElement</p>
+<ul>
+<li>获取页面上的第一个div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.xpath('//div')}</code></pre>
+<h3 id="87vo4a"><a class="reference-link" name="87vo4a"></a><span class="header-link octicon octicon-link"></span>xpaths</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>xpath</td> <td>要获取的xpath</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElements</p>
+<ul>
+<li>获取页面上的所有div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.xpaths('//div')}</code></pre>
+<h3 id="9i897i"><a class="reference-link" name="9i897i"></a><span class="header-link octicon octicon-link"></span>executeScript</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>script</td> <td>js脚本</td> <td>否</td></tr> <tr><td>List&lt;Object&gt;</td> <td>参数</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：Object</p>
+<ul>
+<li>执行js</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.executeScript('return "hello spider-flow-" + arguments[0];',['selenium'])}</code></pre>
+<h3 id="b5mljh"><a class="reference-link" name="b5mljh"></a><span class="header-link octicon octicon-link"></span>quit</h3><ul>
+<li>退出浏览器</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.quit()}</code></pre>
+<h3 id="b5pd05"><a class="reference-link" name="b5pd05"></a><span class="header-link octicon octicon-link"></span>toUrl</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>url</td> <td>要跳转的url</td> <td>否</td></tr></tbody></table>
+<ul>
+<li>跳转到百度</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.toUrl('https://www.baidu.com')}</code></pre>
+<h3 id="9uzchc"><a class="reference-link" name="9uzchc"></a><span class="header-link octicon octicon-link"></span>loadCookies</h3><ul>
+<li>将cookie加载至cookieContext中，以便后续自动管理cookie</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${resp.loadCookies()}</code></pre>
+<h2 id="nkhnl"><a class="reference-link" name="nkhnl"></a><span class="header-link octicon octicon-link"></span>WebElement 方法</h2><h3 id="3acxj3"><a class="reference-link" name="3acxj3"></a><span class="header-link octicon octicon-link"></span>html</h3><p>TIP</p>
+<p>返回值类型：String</p>
+<ul>
+<li>获取节点的html</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.html()}</code></pre>
+<h3 id="akuh0g"><a class="reference-link" name="akuh0g"></a><span class="header-link octicon octicon-link"></span>text</h3><p>TIP</p>
+<p>返回值类型：String</p>
+<ul>
+<li>获取节点的text</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.text()}</code></pre>
+<h3 id="4q0z1n"><a class="reference-link" name="4q0z1n"></a><span class="header-link octicon octicon-link"></span>attr</h3><p>TIP</p>
+<p>返回值类型：String</p>
+<ul>
+<li>获取节点的href属性</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.attr('href')}</code></pre>
+<h3 id="cg7aqf"><a class="reference-link" name="cg7aqf"></a><span class="header-link octicon octicon-link"></span>selector</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>cssSelector</td> <td>要获取的cssSelector</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElement</p>
+<ul>
+<li>获取该节点下的第一个div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.selector('div')}</code></pre>
+<h3 id="2wl3bk"><a class="reference-link" name="2wl3bk"></a><span class="header-link octicon octicon-link"></span>selectors</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>cssSelector</td> <td>要获取的cssSelector</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElements</p>
+<ul>
+<li>获取获取该节点下的所有div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.selectors('div')}</code></pre>
+<h3 id="1khijr"><a class="reference-link" name="1khijr"></a><span class="header-link octicon octicon-link"></span>xpath</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>xpath</td> <td>要获取的xpath</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElement</p>
+<ul>
+<li>获取获取该节点下的第一个div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.xpath('//div')}</code></pre>
+<h3 id="dnh38a"><a class="reference-link" name="dnh38a"></a><span class="header-link octicon octicon-link"></span>xpaths</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>xpath</td> <td>要获取的xpath</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElements</p>
+<ul>
+<li>获取获取该节点下的所有div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.xpaths('//div')}</code></pre>
+<h3 id="8oapqe"><a class="reference-link" name="8oapqe"></a><span class="header-link octicon octicon-link"></span>screenshot</h3><p>TIP</p>
+<p>返回值类型：byte[]</p>
+<ul>
+<li>对该节点进行截图</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.screenshot()}</code></pre>
+<h3 id="bf96qx"><a class="reference-link" name="bf96qx"></a><span class="header-link octicon octicon-link"></span>click</h3><p>TIP</p>
+<p>返回值类型：WebElement</p>
+<ul>
+<li>对该节点进行点击</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.click()}</code></pre>
+<h3 id="812ovr"><a class="reference-link" name="812ovr"></a><span class="header-link octicon octicon-link"></span>sendKeys</h3><p>TIP</p>
+<p>返回值类型：WebElement</p>
+<ul>
+<li>对该节点进行模拟按键</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementVar.sendKeys('hello spider-flow')}</code></pre>
+<h3 id="2fu6sj"><a class="reference-link" name="2fu6sj"></a><span class="header-link octicon octicon-link"></span>clickAndHold</h3><h3 id="245cle"><a class="reference-link" name="245cle"></a><span class="header-link octicon octicon-link"></span>release</h3><h3 id="eirm4a"><a class="reference-link" name="eirm4a"></a><span class="header-link octicon octicon-link"></span>move</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>offset_x</td> <td>offset x</td> <td>是</td></tr> <tr><td>offset_y</td> <td>offset y</td> <td>是</td></tr></tbody></table>
+<p>TIP</p>
+<p>在该节点上模拟鼠标移动，当offset_x和offset_y为空时，则模拟鼠标移动到该节点上</p>
+<h3 id="8uozni"><a class="reference-link" name="8uozni"></a><span class="header-link octicon octicon-link"></span>doubleClick</h3><h3 id="11horw"><a class="reference-link" name="11horw"></a><span class="header-link octicon octicon-link"></span>pause</h3><h3 id="aol3ml"><a class="reference-link" name="aol3ml"></a><span class="header-link octicon octicon-link"></span>perform</h3><p>TIP</p>
+<p>以上6个方法是配套使用，调用perform时才是真正执行动作</p>
+<ul>
+<li>模拟鼠标移动到该节点上，等待500ms在点击，等待500ms在移动，最后释放(模拟拖拽滑块条)</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code> ${elementVar.move().pause(500).clickAndHold().pause(500).move(200,0).release().perform()}</code></pre>
+<h2 id="3wvfu3"><a class="reference-link" name="3wvfu3"></a><span class="header-link octicon octicon-link"></span>WebElements 方法</h2><h3 id="36xqs6"><a class="reference-link" name="36xqs6"></a><span class="header-link octicon octicon-link"></span>html</h3><p>TIP</p>
+<p>返回值类型：List&lt;String&gt;</p>
+<ul>
+<li>获取节点的html</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementsVar.html()}</code></pre>
+<h3 id="cey1yt"><a class="reference-link" name="cey1yt"></a><span class="header-link octicon octicon-link"></span>text</h3><p>TIP</p>
+<p>返回值类型：List&lt;String&gt;</p>
+<ul>
+<li>获取节点的text</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementsVar.text()}</code></pre>
+<h3 id="6guvir"><a class="reference-link" name="6guvir"></a><span class="header-link octicon octicon-link"></span>attr</h3><p>TIP</p>
+<p>返回值类型：List&lt;String&gt;</p>
+<ul>
+<li>获取节点的href属性</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementsVar.attr('href')}</code></pre>
+<h3 id="eibpxi"><a class="reference-link" name="eibpxi"></a><span class="header-link octicon octicon-link"></span>selector</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>cssSelector</td> <td>要获取的cssSelector</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElement</p>
+<ul>
+<li>获取该节点下的第一个div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementsVar.selector('div')}</code></pre>
+<h3 id="5iuvw0"><a class="reference-link" name="5iuvw0"></a><span class="header-link octicon octicon-link"></span>selectors</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>cssSelector</td> <td>要获取的cssSelector</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElements</p>
+<ul>
+<li>获取获取该节点下的所有div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementsVar.selectors('div')}</code></pre>
+<h3 id="7dfc9v"><a class="reference-link" name="7dfc9v"></a><span class="header-link octicon octicon-link"></span>xpath</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>xpath</td> <td>要获取的xpath</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElement</p>
+<ul>
+<li>获取获取该节点下的第一个div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementsVar.xpath('//div')}</code></pre>
+<h3 id="2tag8r"><a class="reference-link" name="2tag8r"></a><span class="header-link octicon octicon-link"></span>xpaths</h3><table><thead><tr><th>参数名</th> <th>描述</th> <th>可否为空</th></tr></thead> <tbody><tr><td>xpath</td> <td>要获取的xpath</td> <td>否</td></tr></tbody></table>
+<p>TIP</p>
+<p>返回值类型：WebElements</p>
+<ul>
+<li>获取获取该节点下的所有div</li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${elementsVar.xpaths('//div')}</code></pre>
+<!-- 原文：https://www.spiderflow.org/plugins/selenium.html -->
+
+<div class="nav-bar">
+<a href="bb62c1cf56345655.html">&larr; 数组</a>
+<a href="c6a0ff50924497e3.html">redis &rarr;</a>
+</div>
+</main>
+</div>
+</body>
+</html>

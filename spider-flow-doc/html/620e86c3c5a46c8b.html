@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>表达式语法 - spider-flow v0.5.0 使用手册</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #333; line-height: 1.8; background: #f5f6f8; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: #1e1e2e; color: #cdd6f4; padding: 20px 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; flex-shrink: 0; }
+.sidebar h2 { padding: 0 20px 15px; font-size: 16px; color: #89b4fa; border-bottom: 1px solid #313244; margin-bottom: 10px; }
+.sidebar .cat { padding: 8px 20px 4px; font-size: 13px; color: #a6adc8; font-weight: 600; margin-top: 8px; }
+.sidebar a { display: block; padding: 5px 20px 5px 30px; color: #bac2de; text-decoration: none; font-size: 14px; transition: all .15s; }
+.sidebar a:hover { background: #313244; color: #89b4fa; }
+.sidebar a.active { background: #313244; color: #89b4fa; border-left: 3px solid #89b4fa; padding-left: 27px; }
+.main { margin-left: 280px; flex: 1; padding: 30px 40px; max-width: 960px; }
+.main h1 { font-size: 28px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #89b4fa; }
+.main h2 { font-size: 22px; margin-top: 35px; margin-bottom: 15px; color: #1e1e2e; }
+.main h3 { font-size: 18px; margin-top: 25px; margin-bottom: 10px; color: #45475a; }
+.main p { margin-bottom: 14px; }
+.main ul, .main ol { margin: 10px 0 14px 24px; }
+.main li { margin-bottom: 6px; }
+.main table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+.main th, .main td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+.main th { background: #e8e9ed; font-weight: 600; }
+.main tr:nth-child(even) { background: #f9f9fb; }
+.main pre { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 12px 0; font-size: 14px; line-height: 1.5; }
+.main code { background: #e8e9ed; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+.main pre code { background: none; padding: 0; }
+.main img { max-width: 100%; border-radius: 4px; margin: 8px 0; }
+.main blockquote { border-left: 4px solid #89b4fa; padding: 10px 16px; margin: 12px 0; background: #eff1f5; color: #4c4f69; }
+.main a { color: #1e66f5; text-decoration: none; }
+.main a:hover { text-decoration: underline; }
+.nav-bar { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; }
+.nav-bar a { color: #1e66f5; text-decoration: none; font-size: 15px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; }
+.nav-bar a:hover { background: #eff1f5; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+<h2>spider-flow v0.5.0</h2>
+<div class="cat">使用教程</div>
+<a href="98bc712c0831b890.html">简介</a>
+<a href="cbd8de47d4474b91.html">安装部署</a>
+<a href="0618b5296afcb0ec.html">快速入门</a>
+<a href="620e86c3c5a46c8b.html" class="active">表达式语法</a>
+<a href="a84ba53bcaa8876c.html">内置变量</a>
+<a href="b41274ae955f4627.html">高级应用</a>
+<a href="012ed125c6ef4d2c.html">插件开发</a>
+<a href="b21643963c940cb5.html">常见问题</a>
+<div class="cat">函数说明</div>
+<a href="6b51214d941f8b38.html">抽取函数</a>
+<a href="6c11a826a7fb67f5.html">base64</a>
+<a href="0257ebe9a5c40dc8.html">date</a>
+<a href="0cf27f119d785511.html">file</a>
+<a href="736dd7675d55820b.html">json</a>
+<a href="04c4eb5f448efd9b.html">list</a>
+<a href="9268522df1b866d7.html">random</a>
+<a href="0c8f87f78abc4879.html">string</a>
+<a href="5475fed325f0ca47.html">url</a>
+<div class="cat">类型扩展</div>
+<a href="db12d839b285b452.html">说明</a>
+<a href="cd5de098cc77a7c2.html">SpiderResponse</a>
+<a href="3b9afee52169a1b8.html">String</a>
+<a href="0cf88f889d5b208.html">Date</a>
+<a href="e62136367240b933.html">Object</a>
+<a href="24462b07eba0709d.html">List</a>
+<a href="c1b64145d3c2abaa.html">Map</a>
+<a href="08255145cc328955.html">Element</a>
+<a href="8c170717c4b91a77.html">Elements</a>
+<a href="bb62c1cf56345655.html">数组</a>
+<div class="cat">插件</div>
+<a href="f29ef61ee185953e.html">selenium</a>
+<a href="c6a0ff50924497e3.html">redis</a>
+<a href="f84295ba325f4603.html">mongodb</a>
+<a href="fa1cf76cf5f45e8a.html">oss</a>
+<a href="31febf38b20913ac.html">ocr</a>
+<a href="88082c85c82b79ca.html">IP代理池插件</a>
+</nav>
+<main class="main">
+<h1>表达式语法</h1>
+
+<h1 id="c0hfy6"><a class="reference-link" name="c0hfy6"></a><span class="header-link octicon octicon-link"></span>表达式语法</h1><h2 id="98gs5y"><a class="reference-link" name="98gs5y"></a><span class="header-link octicon octicon-link"></span>基本用法</h2><p>本项目中表达式引擎也支持模板的方式，例如动态拼接url</p>
+<pre class="prettyprint linenums prettyprinted" style=""><code>https://www.xxx.com/${path}/q?=keyword=${keyword}</code></pre>
+<h2 id="c5zzjv"><a class="reference-link" name="c5zzjv"></a><span class="header-link octicon octicon-link"></span>运算符</h2><p>模板语言支持大多数Java运算符。这些运算符的优先级也与Java中的相同。</p>
+<h2 id="d9kb84"><a class="reference-link" name="d9kb84"></a><span class="header-link octicon octicon-link"></span>类型</h2><pre class="prettyprint linenums prettyprinted" style=""><code>byte ${123b}
+short ${123s}
+int ${123}
+long ${123l}
+float ${123f}
+double ${123d}
+string ${'hello'}
+string ${"hello"}</code></pre>
+<p>同时也支持定义Map和List</p>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${{key : "value"}}
+${[1,2,3,4,5]}
+${{$key : "value"}}//$key表示动态从变量中获取key值</code></pre>
+<h2 id="5jibhn"><a class="reference-link" name="5jibhn"></a><span class="header-link octicon octicon-link"></span>一元运算符</h2><p>您可以通过一元运算<code>-</code>符将数字取反，例如<code>${-234}</code>。要取反布尔表达式，可以使用<code>!</code>运算符，例如<code>${!true}</code>。</p>
+<h2 id="tkf7t"><a class="reference-link" name="tkf7t"></a><span class="header-link octicon octicon-link"></span>算术运算符</h2><p>支持常见的算术运算符，例如<code>${1 + 2 * 3 / 4 % 2}</code></p>
+<h2 id="6y4kal"><a class="reference-link" name="6y4kal"></a><span class="header-link octicon octicon-link"></span>比较运算符</h2><p><code>${23 &lt; 34}</code>，<code>${23 &lt;= 34}</code>，<code>${23 &gt; 34}</code>，<code>${23 &gt;= 34}</code>，<code>${ true != false }</code>，<code>${23 == 34}</code></p>
+<p>比较运算符结果为<code>boolean</code>类型</p>
+<h2 id="7kf91c"><a class="reference-link" name="7kf91c"></a><span class="header-link octicon octicon-link"></span>逻辑运算符</h2><p>除了一元运算<code>!</code>符，您还可以使用<code>&amp;&amp;</code>和<code>||</code>。就像Java中一样，运算符也是一种短路运算符。如果<code>&amp;&amp;</code>左边计算为<code>false</code>，则不会计算右边。如果<code>||</code>左侧为true，则不会计算右边</p>
+<h2 id="c5eern"><a class="reference-link" name="c5eern"></a><span class="header-link octicon octicon-link"></span>三元运算符</h2><p>三元运算符是<code>if</code>语句的简写形式，其工作方式类似于Java中，例如<code>${true ? "yes" : "no"}</code></p>
+<h2 id="3lmiht"><a class="reference-link" name="3lmiht"></a><span class="header-link octicon octicon-link"></span>变量</h2><pre class="prettyprint linenums prettyprinted" style=""><code>${var}</code></pre>
+<p>通过<code>${变量名}</code>调用</p>
+<h2 id="8lcg5r"><a class="reference-link" name="8lcg5r"></a><span class="header-link octicon octicon-link"></span>调用方法</h2><pre class="prettyprint linenums prettyprinted" style=""><code>${extract.xpath(resp.html,'//div[@id=abc]').regx('/\\d/').toInt()}</code></pre>
+<p>通过<code>${变量.方法名(参数1,参数2,….)}</code>进行调用</p>
+<h2 id="fdnawr"><a class="reference-link" name="fdnawr"></a><span class="header-link octicon octicon-link"></span>数组和Map</h2><pre class="prettyprint linenums prettyprinted" style=""><code>${myArray[2]} ${myArray[indexVar]} ${myMap.get("key")} ${myMap["key"]} ${myMap.get(keyVar)} ${myMap[keyVar]}</code></pre>
+<h2 id="zdkc0"><a class="reference-link" name="zdkc0"></a><span class="header-link octicon octicon-link"></span>链式调用</h2><p>与Java中一样，您可以无限嵌套成员，数组元素和映射访问</p>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${myObject.aField[12]["key"].someMethod(1, 2).anotherMethod()}</code></pre>
+<pre class="prettyprint linenums prettyprinted" style=""><code>${extract.xpath(resp.html,'//div[@id=abc]').regx('/\\d/').toInt()}</code></pre>
+<!-- 原文：https://www.spiderflow.org/course/expression.html -->
+
+<div class="nav-bar">
+<a href="0618b5296afcb0ec.html">&larr; 快速入门</a>
+<a href="a84ba53bcaa8876c.html">内置变量 &rarr;</a>
+</div>
+</main>
+</div>
+</body>
+</html>

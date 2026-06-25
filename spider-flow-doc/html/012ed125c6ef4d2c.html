@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>插件开发 - spider-flow v0.5.0 使用手册</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; color: #333; line-height: 1.8; background: #f5f6f8; }
+.layout { display: flex; min-height: 100vh; }
+.sidebar { width: 280px; background: #1e1e2e; color: #cdd6f4; padding: 20px 0; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; flex-shrink: 0; }
+.sidebar h2 { padding: 0 20px 15px; font-size: 16px; color: #89b4fa; border-bottom: 1px solid #313244; margin-bottom: 10px; }
+.sidebar .cat { padding: 8px 20px 4px; font-size: 13px; color: #a6adc8; font-weight: 600; margin-top: 8px; }
+.sidebar a { display: block; padding: 5px 20px 5px 30px; color: #bac2de; text-decoration: none; font-size: 14px; transition: all .15s; }
+.sidebar a:hover { background: #313244; color: #89b4fa; }
+.sidebar a.active { background: #313244; color: #89b4fa; border-left: 3px solid #89b4fa; padding-left: 27px; }
+.main { margin-left: 280px; flex: 1; padding: 30px 40px; max-width: 960px; }
+.main h1 { font-size: 28px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #89b4fa; }
+.main h2 { font-size: 22px; margin-top: 35px; margin-bottom: 15px; color: #1e1e2e; }
+.main h3 { font-size: 18px; margin-top: 25px; margin-bottom: 10px; color: #45475a; }
+.main p { margin-bottom: 14px; }
+.main ul, .main ol { margin: 10px 0 14px 24px; }
+.main li { margin-bottom: 6px; }
+.main table { border-collapse: collapse; width: 100%; margin: 14px 0; }
+.main th, .main td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+.main th { background: #e8e9ed; font-weight: 600; }
+.main tr:nth-child(even) { background: #f9f9fb; }
+.main pre { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 6px; overflow-x: auto; margin: 12px 0; font-size: 14px; line-height: 1.5; }
+.main code { background: #e8e9ed; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+.main pre code { background: none; padding: 0; }
+.main img { max-width: 100%; border-radius: 4px; margin: 8px 0; }
+.main blockquote { border-left: 4px solid #89b4fa; padding: 10px 16px; margin: 12px 0; background: #eff1f5; color: #4c4f69; }
+.main a { color: #1e66f5; text-decoration: none; }
+.main a:hover { text-decoration: underline; }
+.nav-bar { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; display: flex; justify-content: space-between; }
+.nav-bar a { color: #1e66f5; text-decoration: none; font-size: 15px; padding: 8px 16px; border: 1px solid #ddd; border-radius: 4px; }
+.nav-bar a:hover { background: #eff1f5; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+<h2>spider-flow v0.5.0</h2>
+<div class="cat">使用教程</div>
+<a href="98bc712c0831b890.html">简介</a>
+<a href="cbd8de47d4474b91.html">安装部署</a>
+<a href="0618b5296afcb0ec.html">快速入门</a>
+<a href="620e86c3c5a46c8b.html">表达式语法</a>
+<a href="a84ba53bcaa8876c.html">内置变量</a>
+<a href="b41274ae955f4627.html">高级应用</a>
+<a href="012ed125c6ef4d2c.html" class="active">插件开发</a>
+<a href="b21643963c940cb5.html">常见问题</a>
+<div class="cat">函数说明</div>
+<a href="6b51214d941f8b38.html">抽取函数</a>
+<a href="6c11a826a7fb67f5.html">base64</a>
+<a href="0257ebe9a5c40dc8.html">date</a>
+<a href="0cf27f119d785511.html">file</a>
+<a href="736dd7675d55820b.html">json</a>
+<a href="04c4eb5f448efd9b.html">list</a>
+<a href="9268522df1b866d7.html">random</a>
+<a href="0c8f87f78abc4879.html">string</a>
+<a href="5475fed325f0ca47.html">url</a>
+<div class="cat">类型扩展</div>
+<a href="db12d839b285b452.html">说明</a>
+<a href="cd5de098cc77a7c2.html">SpiderResponse</a>
+<a href="3b9afee52169a1b8.html">String</a>
+<a href="0cf88f889d5b208.html">Date</a>
+<a href="e62136367240b933.html">Object</a>
+<a href="24462b07eba0709d.html">List</a>
+<a href="c1b64145d3c2abaa.html">Map</a>
+<a href="08255145cc328955.html">Element</a>
+<a href="8c170717c4b91a77.html">Elements</a>
+<a href="bb62c1cf56345655.html">数组</a>
+<div class="cat">插件</div>
+<a href="f29ef61ee185953e.html">selenium</a>
+<a href="c6a0ff50924497e3.html">redis</a>
+<a href="f84295ba325f4603.html">mongodb</a>
+<a href="fa1cf76cf5f45e8a.html">oss</a>
+<a href="31febf38b20913ac.html">ocr</a>
+<a href="88082c85c82b79ca.html">IP代理池插件</a>
+</nav>
+<main class="main">
+<h1>插件开发</h1>
+
+<h1 id="12hdcf"><a class="reference-link" name="12hdcf"></a><span class="header-link octicon octicon-link"></span>插件开发</h1><h2 id="dmw5w6"><a class="reference-link" name="dmw5w6"></a><span class="header-link octicon octicon-link"></span>开发步骤</h2><ul>
+<li>新建一个maven项目 </li></ul>
+<pre class="prettyprint linenums prettyprinted" style=""><code>&lt;parent&gt;
+    &lt;groupId&gt;org.spiderflow&lt;/groupId&gt;
+    &lt;artifactId&gt;spider-flow&lt;/artifactId&gt;
+    &lt;version&gt;最新版本号&lt;/version&gt;
+&lt;/parent&gt;</code></pre>
+<ul>
+<li>引入spider-flow-api </li></ul>
+<pre class="prettyprint linenums"><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.spiderflow&lt;/groupId&gt;
+    &lt;artifactId&gt;spider-flow-api&lt;/artifactId&gt;
+    &lt;scope&gt;provided&lt;/scope&gt;
+&lt;/dependency&gt;
+</code></pre>
+<ul>
+<li><p>开始编写代码开发插件</p>
+</li><li><p>在spider-flow-web中引入刚写的插件</p>
+</li><li><p>功能测试</p>
+</li></ul>
+<h2 id="apzqgj"><a class="reference-link" name="apzqgj"></a><span class="header-link octicon octicon-link"></span>节点(图形)扩展</h2><ul>
+<li>编写Java类，实现ShapeExecutor </li></ul>
+<pre class="prettyprint linenums"><code>@Component
+public class RedisExecutor implements ShapeExecutor{
+
+    @Override
+    public String supportShape() {
+        return "redis";
+    }
+
+    @Override
+    public Shape shape() {
+        Shape shape = new Shape();
+        //web界面上显示的图标
+        shape.setImage("data:image/png;base64,iVBORw0KG.......");
+        //拖放至容器里时默认的节点名称
+        shape.setLabel("Redis");
+        //模板文件名
+        shape.setName("redis");
+        //鼠标移动至图标上显示的名称
+        shape.setTitle("Redis");
+        return shape;
+    }
+
+    @Override
+    public void execute(SpiderNode node, SpiderContext context, Map&lt;String, Object&gt; variables) {
+        //该图形具体实现的逻辑
+    }
+
+}
+</code></pre>
+<ul>
+<li>编写Html模板，放至src/main/resources/static/resources/templates/中，模板语法遵循layui的laytpl语法 </li></ul>
+<pre class="prettyprint linenums"><code>&lt;div class="layui-tab layui-tab-fixed layui-tab-brief"&gt;
+  &lt;ul class="layui-tab-title"&gt;
+    &lt;li class="layui-this"&gt;基本配置&lt;/li&gt;
+  &lt;/ul&gt;
+  &lt;div class="layui-tab-content editor-form-node"&gt;
+    &lt;div class="layui-tab-item layui-show"&gt;
+        &lt;form class="layui-form"&gt;
+            &lt;div class="layui-form-item"&gt;
+                &lt;label class="layui-form-label"&gt;节点名称&lt;/label&gt;
+                &lt;div class="layui-input-block"&gt;
+                    &lt;input type="text" name="value" placeholder="请输入节点名称" value="{{=d.value}}" autocomplete="off" class="layui-input"&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="layui-form-item"&gt;
+                &lt;label class="layui-form-label"&gt;host&lt;/label&gt;
+                &lt;div class="layui-input-block"&gt;
+                    &lt;input type="text" name="host" placeholder="请输入redis host" autocomplete="off" class="layui-input input-default" value="{{=d.data.object.host}}"&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class="layui-form-item"&gt;
+                &lt;div class="layui-input-block"&gt;
+                    &lt;button class="layui-btn btn-redis-datasource-test" type="button"&gt;测试连接&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/form&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;script&gt;
+    //点击测试连接
+    $('.layui-form').on('click','.btn-redis-datasource-test',function(){
+        var $form = $('.layui-form');
+        var host = $form.find('input[name=host]').val();
+
+    });
+&lt;/script&gt;
+</code></pre>
+<ul>
+<li>插件功能测试 </li></ul>
+<h2 id="atf2oc"><a class="reference-link" name="atf2oc"></a><span class="header-link octicon octicon-link"></span>工具类</h2><ul>
+<li>编写Java类，实现FunctionExecutor </li></ul>
+<pre class="prettyprint linenums"><code>@Component
+public class StringFunctionExecutor implements FunctionExecutor{
+
+    @Override
+    public String getFunctionPrefix() {
+        return "string";    //方法前缀,调用本类的方法时均以${string.xxx()}方法调用
+    }
+
+    /**
+    *    方法必须是public static 修饰,参数可有可无
+    *    以截取字符串为例,该方法编写如下,最终调用时使用${string.substring('hello',3)}调用
+    */
+    public static String substring(String content, int beginIndex) {
+        return content != null ? content.substring(beginIndex) : null;
+    }
+}
+</code></pre>
+<ul>
+<li>插件功能测试 </li></ul>
+<h2 id="3kv4dc"><a class="reference-link" name="3kv4dc"></a><span class="header-link octicon octicon-link"></span>类型扩展(类型增强)</h2><ul>
+<li>编写Java类，实现FunctionExtension </li></ul>
+<pre class="prettyprint linenums"><code>@Component
+public class StringFunctionExtension implements FunctionExtension{
+
+    @Override
+    public Class&lt;?&gt; support() {
+        return String.class;    //扩展String类的方法
+    }
+
+    /**
+    *    方法必须是public static 修饰,参数至少有一个,且第一个参数必须为support方法返回的类型
+    *    以将字符串转为int为例,该方法编写如下,最终调用时使用${strVar.toInt()}调用
+    *    该方法第一个参数会自动被传入,所以调用时无需传入
+    */
+    @Comment("字符串转int")
+    @Example("${strVar.toInt()}")
+    public static Integer toInt(String str){
+        return NumberUtils.toInt(str);
+    }
+
+    /**
+    *    方法必须是public static 修饰,参数至少有一个,且第一个参数必须为support方法返回的类型
+    *    以将字符串转为int为例,该方法编写如下,最终调用时使用${strVar.toInt(2)}调用
+    *    该方法第一个参数会自动被传入,所以调用时无需传入
+    */
+    @Comment("字符串转int")
+    @Example("${strVar.toInt(0)}")
+    public static Integer toInt(String str,Integer defaultValue){
+        return NumberUtils.toInt(str,defaultValue);
+    }
+}
+</code></pre>
+<ul>
+<li>插件功能测试<!-- 原文：https://www.spiderflow.org/course/plugin.html --></li></ul>
+
+<div class="nav-bar">
+<a href="b41274ae955f4627.html">&larr; 高级应用</a>
+<a href="b21643963c940cb5.html">常见问题 &rarr;</a>
+</div>
+</main>
+</div>
+</body>
+</html>
