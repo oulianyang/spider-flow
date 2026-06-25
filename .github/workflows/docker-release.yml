@@ -5,11 +5,14 @@
 # 构建产物：4 个 docker save tar 文件（amd64 + arm64）
 # 发布到：GitHub Releases（可直接浏览器下载）
 #
+# 架构策略：amd64 跑在 x86 runner，arm64 跑在原生 ARM64 runner
+#           （不使用 QEMU 模拟，避免 OOM；ARM64 runner 公开仓库免费 GA）
+#
 # 使用步骤：
 #   1. 推送代码到 GitHub
 #   2. 打开仓库 Actions 页面，选 "Build Docker Images"，点 Run workflow
 #   3. version 参数填版本号（如 v0.5.0），用于 Release 标题和镜像 tag
-#   4. 等待约 15-20 分钟完成
+#   4. 等待约 10-15 分钟完成
 #   5. 到 Releases 页面下载 tar 文件
 #   6. 内网 docker load -i xxx.tar 即可使用
 # ============================================================
@@ -32,16 +35,21 @@ env:
 
 jobs:
   build:
-    name: 构建 & 导出镜像
-    runs-on: ubuntu-latest
+    name: 构建 & 导出镜像 (${{ matrix.tag_suffix }})
+    # 关键：每个平台跑在对应架构的原生 runner 上，不用 QEMU 模拟
+    # - amd64 → ubuntu-24.04（x86_64 原生）
+    # - arm64 → ubuntu-24.04-arm（ARM64 原生，公开仓库 2025-08 GA，免费无限）
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - platform: linux/amd64
             tag_suffix: amd64
+            runner: ubuntu-24.04
           - platform: linux/arm64
             tag_suffix: arm64
+            runner: ubuntu-24.04-arm
 
     steps:
       - name: Checkout 代码
@@ -57,18 +65,11 @@ jobs:
       - name: Maven 编译
         run: mvn clean package -DskipTests -q
 
-      - name: 设置 Docker QEMU（ARM64 模拟）
-        uses: docker/setup-qemu-action@v3
-
-      - name: 设置 Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
       - name: 构建镜像 (${{ matrix.platform }})
+        # 原生 runner 直接 docker build，无需 QEMU/buildx 交叉编译
         run: |
-          docker buildx build \
-            --platform ${{ matrix.platform }} \
+          docker build \
             -t ${{ env.IMAGE_NAME }}:${{ matrix.tag_suffix }} \
-            --load \
             .
 
       - name: 导出 spider-flow 镜像
@@ -77,8 +78,9 @@ jobs:
             -o spider-flow-${{ matrix.tag_suffix }}.tar
 
       - name: 拉取 & 导出 MySQL 镜像 (${{ matrix.platform }})
+        # 原生 runner 上 docker pull 自动拉取当前架构，无需 --platform
         run: |
-          docker pull --platform ${{ matrix.platform }} mysql:8.0
+          docker pull mysql:8.0
           docker save mysql:8.0 -o mysql-8.0-${{ matrix.tag_suffix }}.tar
 
       - name: 上传 spider-flow-${{ matrix.tag_suffix }}.tar
